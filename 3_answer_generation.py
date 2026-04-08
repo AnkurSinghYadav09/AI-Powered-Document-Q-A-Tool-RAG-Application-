@@ -1,5 +1,6 @@
+import os
 from langchain_chroma import Chroma
-from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -10,7 +11,7 @@ load_dotenv()
 persistent_directory = "db/chroma_db"
 
 # Load embeddings and vector store
-embedding_model = OpenAIEmbeddings(model="text-embedding-3-small")
+embedding_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 db = Chroma(
     persist_directory=persistent_directory,
@@ -49,8 +50,12 @@ Documents:
 Please provide a clear, helpful answer using only the information from these documents. If you can't find the answer in the documents, say "I don't have enough information to answer that question based on the provided documents."
 """
 
-# Create a ChatOpenAI model
-model = ChatOpenAI(model="gpt-4o")
+# Create model using HuggingFace router with Gemma
+model = ChatOpenAI(
+    model="google/gemma-4-31B-it:novita",
+    base_url="https://router.huggingface.co/v1",
+    api_key=os.environ["HF_TOKEN"],
+)
 
 # Define the messages for the model
 messages = [

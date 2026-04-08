@@ -1,18 +1,24 @@
+import os
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_openai import ChatOpenAI
+from langchain_huggingface import HuggingFaceEmbeddings
 
 # Load environment variables
 load_dotenv()
 
 # Connect to your document database
 persistent_directory = "db/chroma_db"
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 db = Chroma(persist_directory=persistent_directory, embedding_function=embeddings)
 
-# Set up AI model
-model = ChatOpenAI(model="gpt-4o")
+# Set up AI model using HuggingFace router with Gemma
+model = ChatOpenAI(
+    model="google/gemma-4-31B-it:novita",
+    base_url="https://router.huggingface.co/v1",
+    api_key=os.environ["HF_TOKEN"],
+)
 
 # Store our conversation as messages
 chat_history = []
